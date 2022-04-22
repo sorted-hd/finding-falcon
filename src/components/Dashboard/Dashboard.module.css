@@ -26,6 +26,11 @@
   margin-right: 1rem;
 }
 
+.radioActionBtn {
+  display: flex;
+  flex-flow: column;
+}
+
 .styles.dashboard__btnAction {
   width: 100%;
 }

@@ -6,8 +6,10 @@ import styles from './Dashboard.module.css';
 
 const Dashboard = () => {
   const [planets, setPlanets] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   useEffect(() => {
     makePlanetsAPICall();
+    makeVehiclesAPICall();
   }, []);
 
   const makePlanetsAPICall = async () => {
@@ -19,6 +21,22 @@ const Dashboard = () => {
       selectedBy: '',
     }));
     setPlanets(originalData);
+  };
+
+  const ifDestinationSelected = (destinationName) => {
+    let flag = false;
+    planets.forEach((planet) => {
+      if (planet.selectedBy === destinationName && planet.isSelected) {
+        flag = !flag;
+      }
+    });
+    return flag;
+  };
+
+  const makeVehiclesAPICall = async () => {
+    const responseReceived = await axios.get(config.VEHICLES_API_URL);
+    // console.log(responseReceived.data);
+    setVehicles(responseReceived.data);
   };
 
   const onSelectHandler = (event) => {
@@ -75,6 +93,18 @@ const Dashboard = () => {
                 )
             )}
           </select>
+          <div className={styles.radioActionBtn}>
+            {ifDestinationSelected('destination1') && (
+              <>
+                {vehicles.map((vehicle, idx) => (
+                  <div key={idx}>
+                    <input type="radio" />
+                    {`${vehicle.name} ${vehicle.total_no}`}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
         </div>
         <div className={styles.dashboard__select}>
           <span>Destination 2</span>
@@ -96,6 +126,18 @@ const Dashboard = () => {
                 )
             )}
           </select>
+          <div className={styles.radioActionBtn}>
+            {ifDestinationSelected('destination2') && (
+              <>
+                {vehicles.map((vehicle, idx) => (
+                  <div key={idx}>
+                    <input type="radio" />
+                    {`${vehicle.name} ${vehicle.total_no}`}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
         </div>
         <div className={styles.dashboard__select}>
           <span>Destination 3</span>
@@ -117,6 +159,18 @@ const Dashboard = () => {
                 )
             )}
           </select>
+          <div className={styles.radioActionBtn}>
+            {ifDestinationSelected('destination3') && (
+              <>
+                {vehicles.map((vehicle, idx) => (
+                  <div key={idx}>
+                    <input type="radio" />
+                    {`${vehicle.name} ${vehicle.total_no}`}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
         </div>
         <div className={styles.dashboard__select}>
           <span>Destination 4</span>
@@ -138,6 +192,18 @@ const Dashboard = () => {
                 )
             )}
           </select>
+          <div className={styles.radioActionBtn}>
+            {ifDestinationSelected('destination4') && (
+              <>
+                {vehicles.map((vehicle, idx) => (
+                  <div key={idx}>
+                    <input type="radio" />
+                    {`${vehicle.name} ${vehicle.total_no}`}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
         </div>
         <div className={styles.dashboard__select}>Time Taken: 50</div>
       </div>

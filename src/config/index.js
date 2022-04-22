@@ -3,6 +3,12 @@ const config = {
   VEHICLES_API_URL: 'https://findfalcone.herokuapp.com/vehicles',
   FIND_API_URL: 'https://findfalcone.herokuapp.com/find',
   TOKEN_URL: 'https://findfalcone.herokuapp.com/token',
+  DESTINATION_LIST: [
+    'DESTINATION 1',
+    'DESTINATION 2',
+    'DESTINATION 3',
+    'DESTINATION 4',
+  ],
 };
 
 export default config;

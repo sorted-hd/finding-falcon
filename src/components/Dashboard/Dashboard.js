@@ -48,12 +48,12 @@ const Dashboard = ({ findFalcone }) => {
 
   const onSelectHandler = (event) => {
     const curr = event.target;
-    const selectedValue = curr.value.toLowerCase();
-    const selectedName = curr.name.toLowerCase();
-    console.log(selectedValue);
+    const selectedValue = curr.value;
+    const selectedName = curr.name;
+
     let nPlanets = [...planets];
     nPlanets = nPlanets.map((nPlanet) => {
-      if (nPlanet.name.toLowerCase() === selectedValue) {
+      if (nPlanet.name === selectedValue) {
         nPlanet = { ...nPlanet, isSelected: true, selectedBy: selectedName };
         return nPlanet;
       } else {
@@ -64,20 +64,18 @@ const Dashboard = ({ findFalcone }) => {
     nPlanets = nPlanets.map((nPlanet) => {
       if (
         nPlanet.selectedBy === selectedName &&
-        nPlanet.name.toLowerCase() !== selectedValue
+        nPlanet.name !== selectedValue
       ) {
         return { ...nPlanet, isSelected: false, selectedBy: '' };
       }
       return nPlanet;
     });
-    console.log(nPlanets);
+
     setPlanets(nPlanets);
   };
 
   const onVehicleSelectHandler = (event) => {
     const curr = event.target;
-    console.dir(curr.value);
-    console.log(curr.name);
 
     let nVehicles = [...vehicles];
     let nPlanets = [...planets];
@@ -124,9 +122,7 @@ const Dashboard = ({ findFalcone }) => {
   const getPlanetSelectedFor = (destinationName) => {
     const nPlanets = [...planets];
     for (let idx = 0; idx < nPlanets.length; idx++) {
-      if (
-        nPlanets[idx].selectedBy.toLowerCase() === destinationName.toLowerCase()
-      ) {
+      if (nPlanets[idx].selectedBy === destinationName) {
         return nPlanets[idx];
       }
     }
@@ -148,174 +144,46 @@ const Dashboard = ({ findFalcone }) => {
         Select planets you want to search in:
       </span>
       <div className={styles.dashboard__selectAction}>
-        <div className={styles.dashboard__select}>
-          <span>Destination 1</span>
-          <select
-            onChange={onSelectHandler}
-            defaultValue={'default'}
-            name="destination1"
-          >
-            <option value="default" disabled={true} hidden={true}>
-              SELECT
-            </option>
-            {planets.map(
-              (planet, idx) =>
-                (!planet.isSelected ||
-                  planet.selectedBy === 'destination1') && (
-                  <option key={idx} value={planet.name}>
-                    {planet.name}
-                  </option>
-                )
-            )}
-          </select>
-          <div className={styles.radioActionBtn}>
-            {ifDestinationSelected('destination1') && (
-              <>
-                {vehicles.map((vehicle, idx) => (
-                  <div key={idx}>
-                    <input
-                      type="radio"
-                      name="destination1"
-                      onChange={onVehicleSelectHandler}
-                      value={vehicle.name}
-                      disabled={checkVehicleEligibility(
-                        vehicle,
-                        'destination1'
-                      )}
-                    />
-                    {`${vehicle.name} ${vehicle.nTotal}`}
-                  </div>
-                ))}
-              </>
-            )}
+        {config.DESTINATION_LIST.map((destination, idx) => (
+          <div className={styles.dashboard__select} key={idx}>
+            <span>{destination}</span>
+            <select
+              onChange={onSelectHandler}
+              defaultValue={'default'}
+              name={destination}
+            >
+              <option value="default" disabled={true} hidden={true}>
+                SELECT
+              </option>
+              {planets.map(
+                (planet, idx) =>
+                  (!planet.isSelected || planet.selectedBy === destination) && (
+                    <option key={idx} value={planet.name}>
+                      {planet.name}
+                    </option>
+                  )
+              )}
+            </select>
+            <div className={styles.radioActionBtn}>
+              {ifDestinationSelected(destination) && (
+                <>
+                  {vehicles.map((vehicle, idx) => (
+                    <div key={idx}>
+                      <input
+                        type="radio"
+                        name={destination}
+                        onChange={onVehicleSelectHandler}
+                        value={vehicle.name}
+                        disabled={checkVehicleEligibility(vehicle, destination)}
+                      />
+                      {`${vehicle.name} ${vehicle.nTotal}`}
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
           </div>
-        </div>
-        <div className={styles.dashboard__select}>
-          <span>Destination 2</span>
-          <select
-            onChange={onSelectHandler}
-            name="destination2"
-            defaultValue={'default'}
-          >
-            <option value="default" disabled={true} hidden={true}>
-              SELECT
-            </option>
-            {planets.map(
-              (planet, idx) =>
-                (!planet.isSelected ||
-                  planet.selectedBy === 'destination2') && (
-                  <option key={idx} value={planet.name}>
-                    {planet.name}
-                  </option>
-                )
-            )}
-          </select>
-          <div className={styles.radioActionBtn}>
-            {ifDestinationSelected('destination2') && (
-              <>
-                {vehicles.map((vehicle, idx) => (
-                  <div key={idx}>
-                    <input
-                      type="radio"
-                      name="destination2"
-                      onChange={onVehicleSelectHandler}
-                      value={vehicle.name}
-                      disabled={checkVehicleEligibility(
-                        vehicle,
-                        'destination2'
-                      )}
-                    />
-                    {`${vehicle.name} ${vehicle.nTotal}`}
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
-        <div className={styles.dashboard__select}>
-          <span>Destination 3</span>
-          <select
-            onChange={onSelectHandler}
-            name="destination3"
-            defaultValue={'default'}
-          >
-            <option value="default" disabled={true} hidden={true}>
-              SELECT
-            </option>
-            {planets.map(
-              (planet, idx) =>
-                (!planet.isSelected ||
-                  planet.selectedBy === 'destination3') && (
-                  <option key={idx} value={planet.name}>
-                    {planet.name}
-                  </option>
-                )
-            )}
-          </select>
-          <div className={styles.radioActionBtn}>
-            {ifDestinationSelected('destination3') && (
-              <>
-                {vehicles.map((vehicle, idx) => (
-                  <div key={idx}>
-                    <input
-                      type="radio"
-                      name="destination3"
-                      onChange={onVehicleSelectHandler}
-                      value={vehicle.name}
-                      disabled={checkVehicleEligibility(
-                        vehicle,
-                        'destination3'
-                      )}
-                    />
-                    {`${vehicle.name} ${vehicle.nTotal}`}
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
-        <div className={styles.dashboard__select}>
-          <span>Destination 4</span>
-          <select
-            onChange={onSelectHandler}
-            name="destination4"
-            defaultValue={'default'}
-          >
-            <option value="default" disabled={true} hidden={true}>
-              SELECT
-            </option>
-            {planets.map(
-              (planet, idx) =>
-                (!planet.isSelected ||
-                  planet.selectedBy === 'destination4') && (
-                  <option key={idx} value={planet.name}>
-                    {planet.name}
-                  </option>
-                )
-            )}
-          </select>
-          <div className={styles.radioActionBtn}>
-            {ifDestinationSelected('destination4') && (
-              <>
-                {vehicles.map((vehicle, idx) => (
-                  <div key={idx}>
-                    <input
-                      type="radio"
-                      name="destination4"
-                      onChange={onVehicleSelectHandler}
-                      value={vehicle.name}
-                      disabled={checkVehicleEligibility(
-                        vehicle,
-                        'destination4'
-                      )}
-                    />
-                    {`${vehicle.name} ${vehicle.nTotal}`}
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
+        ))}
         <div className={styles.dashboard__select}>Time Taken: {timeTaken}</div>
       </div>
 

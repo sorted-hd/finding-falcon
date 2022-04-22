@@ -1,0 +1,24 @@
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.header__text {
+  width: 70%;
+  font-size: 3rem;
+  text-align: center;
+}
+
+.header__action {
+  width: 30%;
+}
+
+.header__actionBtn {
+  border: none;
+  cursor: pointer;
+  outline: none;
+  font-size: 1.2rem;
+  padding: 0.8rem;
+  background-color: #fff;
+}

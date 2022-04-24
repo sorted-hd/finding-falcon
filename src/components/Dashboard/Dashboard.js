@@ -51,7 +51,6 @@ const Dashboard = ({ findFalcone }) => {
     const curr = event.target;
     const selectedValue = curr.value;
     const selectedName = curr.name;
-    console.log(selectedName, selectedValue);
 
     let nPlanets = [...planets];
     let nVehicles = [...vehicles];
@@ -76,22 +75,18 @@ const Dashboard = ({ findFalcone }) => {
 
     nVehicles = nVehicles.map((nVehicle) => {
       if (nVehicle.selectedBy.includes(selectedName)) {
+        let idx = nVehicle.selectedBy.indexOf(curr.name);
+        nVehicle.selectedBy.splice(idx, 1);
         return {
           ...nVehicle,
-          nTotal:
-            nVehicle.total_no < nVehicle.nTotal
-              ? nVehicle.nTotal + 1
-              : nVehicle.total_no,
+          nTotal: nVehicle.nTotal + 1,
           isSelected: false,
-          selectedBy: nVehicle.selectedBy.splice(
-            nVehicle.selectedBy.indexOf(selectedName),
-            1
-          ),
+          selectedBy: nVehicle.selectedBy,
         };
       }
       return nVehicle;
     });
-    // console.log(nVehicles);
+
     setVehicles(nVehicles);
     setPlanets(nPlanets);
   };
@@ -101,8 +96,9 @@ const Dashboard = ({ findFalcone }) => {
 
     let nVehicles = [...vehicles];
     let nPlanets = [...planets];
-    let selectedPlanetDistance = 0;
+    let selectedPlanetDistance = [];
     let selectedVehicleSpeed = 0;
+    let nTimeTaken = 0;
     nVehicles = nVehicles.map((nVehicle) => {
       if (nVehicle.name === curr.value) {
         selectedVehicleSpeed = nVehicle.speed;
@@ -121,32 +117,34 @@ const Dashboard = ({ findFalcone }) => {
         nVehicle.selectedBy.includes(curr.name) &&
         nVehicle.name !== curr.value
       ) {
+        let idx = nVehicle.selectedBy.indexOf(curr.name);
+        nVehicle.selectedBy.splice(idx, 1);
         return {
           ...nVehicle,
           isSelected: false,
-          nTotal:
-            nVehicle.total_no < nVehicle.nTotal
-              ? nVehicle.nTotal + 1
-              : nVehicle.total_no,
-          selectedBy: nVehicle.selectedBy.splice(
-            nVehicle.selectedBy.indexOf(curr.name),
-            1
-          ),
+          nTotal: nVehicle.nTotal + 1,
+          selectedBy: nVehicle.selectedBy,
         };
       }
       return nVehicle;
     });
+    console.log(nVehicles);
 
     nPlanets.forEach((nPlanet) => {
-      if (nPlanet.isSelected && nPlanet.selectedBy === curr.name) {
-        selectedPlanetDistance = nPlanet.distance;
+      if (nPlanet.isSelected) {
+        selectedPlanetDistance.push(nPlanet);
       }
     });
 
-    setTimeTaken(
-      (current) =>
-        current + Math.round(selectedPlanetDistance / selectedVehicleSpeed)
-    );
+    nVehicles.forEach((nVehicle) => {
+      selectedPlanetDistance.forEach((planetDistance) => {
+        if (nVehicle.selectedBy.includes(planetDistance.selectedBy)) {
+          nTimeTaken += Math.round(planetDistance.distance / nVehicle.speed);
+        }
+      });
+    });
+
+    setTimeTaken(nTimeTaken);
     setVehicles(nVehicles);
   };
 
@@ -206,10 +204,7 @@ const Dashboard = ({ findFalcone }) => {
                         onChange={onVehicleSelectHandler}
                         value={vehicle.name}
                         disabled={checkVehicleEligibility(vehicle, destination)}
-                        checked={
-                          vehicle.isSelected &&
-                          vehicle.selectedBy.includes(destination)
-                        }
+                        checked={vehicle.selectedBy.includes(destination)}
                       />
                       {`${vehicle.name} ${vehicle.nTotal}`}
                     </div>

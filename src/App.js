@@ -1,11 +1,25 @@
 import './App.css';
 
+import { Route, Switch } from 'react-router-dom';
+
+import Footer from './components/Footer/Footer';
+import Header from './components/Header';
 import Home from './components/Home';
+import Result from './components/Result/Result';
 
 function App() {
   return (
     <div className="App">
-      <Home />
+      <Header />
+      <Switch>
+        <Route path="/" exact>
+          <Home />
+        </Route>
+        <Route path="/results" exact>
+          <Result />
+        </Route>
+      </Switch>
+      <Footer />
     </div>
   );
 }

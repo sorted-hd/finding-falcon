@@ -1,13 +1,12 @@
 import Dashboard from '../Dashboard';
-import Footer from '../Footer';
-import Header from '../Header';
 import axios from 'axios';
 import config from '../../config';
 import styles from './Home.module.css';
-import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 const Home = () => {
-  const [falconeSearchDetails, setFalconeSearchDetails] = useState({});
+  const history = useHistory();
+
   const handleFalconeSearch = async (vehicles, planets, timeTaken) => {
     let planet_names = [];
     let vehicle_names = [];
@@ -17,15 +16,16 @@ const Home = () => {
       }
     });
     vehicles.forEach((vehicle) => {
-      if (vehicle.isSelected) {
-        let diffCount = vehicle.total_no - vehicle.nTotal;
-        while (diffCount-- > 0) {
-          vehicle_names.push(vehicle.name);
-        }
+      let diffCount = vehicle.total_no - vehicle.nTotal;
+      while (diffCount-- > 0) {
+        vehicle_names.push(vehicle.name);
       }
     });
     console.log(planet_names, vehicle_names);
-    await performFalconeAPICall({ vehicle_names, planet_names });
+    const result = await performFalconeAPICall({ vehicle_names, planet_names });
+    const payload = { ...result, timeTaken };
+    localStorage.setItem('result', JSON.stringify(payload));
+    history.push('/results');
   };
 
   const performFalconeAPICall = async (payload) => {
@@ -45,14 +45,11 @@ const Home = () => {
       .post(config.FIND_API_URL, JSON.stringify(payload), configProp)
       .then((response) => response.data);
 
-    console.log(falconeStatus);
-    setFalconeSearchDetails(falconeStatus);
+    return falconeStatus;
   };
   return (
     <div className={styles.home}>
-      <Header />
       <Dashboard findFalcone={handleFalconeSearch} />
-      <Footer />
     </div>
   );
 };

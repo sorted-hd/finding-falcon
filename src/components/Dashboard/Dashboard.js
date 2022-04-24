@@ -41,17 +41,20 @@ const Dashboard = ({ findFalcone }) => {
       ...data,
       isSelected: false,
       nTotal: data.total_no,
-      selectedBy: '',
+      selectedBy: [],
     }));
     setVehicles(originalData);
   };
 
   const onSelectHandler = (event) => {
+    event.preventDefault();
     const curr = event.target;
     const selectedValue = curr.value;
     const selectedName = curr.name;
+    console.log(selectedName, selectedValue);
 
     let nPlanets = [...planets];
+    let nVehicles = [...vehicles];
     nPlanets = nPlanets.map((nPlanet) => {
       if (nPlanet.name === selectedValue) {
         nPlanet = { ...nPlanet, isSelected: true, selectedBy: selectedName };
@@ -71,6 +74,25 @@ const Dashboard = ({ findFalcone }) => {
       return nPlanet;
     });
 
+    nVehicles = nVehicles.map((nVehicle) => {
+      if (nVehicle.selectedBy.includes(selectedName)) {
+        return {
+          ...nVehicle,
+          nTotal:
+            nVehicle.total_no < nVehicle.nTotal
+              ? nVehicle.nTotal + 1
+              : nVehicle.total_no,
+          isSelected: false,
+          selectedBy: nVehicle.selectedBy.splice(
+            nVehicle.selectedBy.indexOf(selectedName),
+            1
+          ),
+        };
+      }
+      return nVehicle;
+    });
+    // console.log(nVehicles);
+    setVehicles(nVehicles);
     setPlanets(nPlanets);
   };
 
@@ -88,19 +110,28 @@ const Dashboard = ({ findFalcone }) => {
           ...nVehicle,
           isSelected: true,
           nTotal: nVehicle.nTotal - 1,
-          selectedBy: curr.name,
+          selectedBy: [...nVehicle.selectedBy, curr.name],
         };
       }
       return nVehicle;
     });
 
     nVehicles = nVehicles.map((nVehicle) => {
-      if (nVehicle.selectedBy === curr.name && nVehicle.name !== curr.value) {
+      if (
+        nVehicle.selectedBy.includes(curr.name) &&
+        nVehicle.name !== curr.value
+      ) {
         return {
           ...nVehicle,
           isSelected: false,
-          nTotal: nVehicle.nTotal + 1,
-          selectedBy: '',
+          nTotal:
+            nVehicle.total_no < nVehicle.nTotal
+              ? nVehicle.nTotal + 1
+              : nVehicle.total_no,
+          selectedBy: nVehicle.selectedBy.splice(
+            nVehicle.selectedBy.indexOf(curr.name),
+            1
+          ),
         };
       }
       return nVehicle;
@@ -175,6 +206,10 @@ const Dashboard = ({ findFalcone }) => {
                         onChange={onVehicleSelectHandler}
                         value={vehicle.name}
                         disabled={checkVehicleEligibility(vehicle, destination)}
+                        checked={
+                          vehicle.isSelected &&
+                          vehicle.selectedBy.includes(destination)
+                        }
                       />
                       {`${vehicle.name} ${vehicle.nTotal}`}
                     </div>

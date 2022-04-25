@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import styles from './Result.module.css';
+
 const Result = () => {
   const [result, setResult] = useState({});
   useEffect(() => {
@@ -9,28 +11,28 @@ const Result = () => {
 
   let domDisplayResult;
   if (result) {
-    if (!result.status) {
+    if (result.status === 'success') {
       domDisplayResult = (
-        <div>
-          <h1>Oops! You were unable to find falcone. Please try again! 🫤</h1>
+        <div className={styles.result}>
+          <h2>
+            Success! Congratulations on finding falcone. King Shan is mighty
+            pleased.! 😀
+          </h2>
+          <h2>Time Taken: {result.timeTaken}</h2>
+          <h2>Planet found: {result.planet_name}</h2>
         </div>
       );
     } else {
       domDisplayResult = (
-        <div>
-          <h1>
-            Success! Congratulations on finding falcone. King Shan is mighty
-            pleased.! 😀
-          </h1>
-          <h3>Time Taken: {result.timeTaken}</h3>
-          <h3>Planet found: {result.planet_name}</h3>
+        <div className={styles.result}>
+          <h2>Oops! You were unable to find falcone. Please try again! 🫤</h2>
         </div>
       );
     }
   } else {
     domDisplayResult = (
-      <div>
-        <h1>Oops! No results to display, make sure to play the game. 🫤</h1>
+      <div className={styles.result}>
+        <h2>Oops! No results to display, make sure to play the game. 🫤</h2>
       </div>
     );
   }

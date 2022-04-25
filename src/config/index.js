@@ -9,6 +9,14 @@ const config = {
     'DESTINATION 3',
     'DESTINATION 4',
   ],
+  DEFAULT: 'DEFAULT',
+  RESULT: 'RESULT',
+  API_CONFIG: {
+    headers: {
+      'content-type': 'application/json',
+      accept: 'application/json',
+    },
+  },
 };
 
 export default config;

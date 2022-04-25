@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
+:root {
+  --primary-color: #2f3640;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -9,4 +13,5 @@ html {
   margin: 0;
   padding: 0;
   font-family: 'Orbitron', sans-serif;
+  background-color: var(--primary-color);
 }

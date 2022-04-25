@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import config from '../../config';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import styles from './Dashboard.module.css';
 
 const Dashboard = ({ findFalcone }) => {
@@ -167,6 +169,25 @@ const Dashboard = ({ findFalcone }) => {
     return false;
   };
 
+  const isButtonDisabled = () => {
+    let selectionsRequired = config.DESTINATION_LIST.length;
+    let planetSelectionsAvailable = planets.reduce((total, planet) => {
+      if (planet.isSelected) {
+        return (total += 1);
+      }
+      return total;
+    }, 0);
+
+    let vehicleSelectionsAvailable = vehicles.reduce((total, vehicle) => {
+      return (total += vehicle.selectedBy.length);
+    }, 0);
+    console.log(vehicleSelectionsAvailable, planetSelectionsAvailable);
+    return !(
+      planetSelectionsAvailable === selectionsRequired &&
+      vehicleSelectionsAvailable === selectionsRequired
+    );
+  };
+
   return (
     <div className={styles.dashboard}>
       <span className={styles.dashboard__text}>
@@ -206,7 +227,15 @@ const Dashboard = ({ findFalcone }) => {
                         disabled={checkVehicleEligibility(vehicle, destination)}
                         checked={vehicle.selectedBy.includes(destination)}
                       />
-                      {`${vehicle.name} ${vehicle.nTotal}`}
+                      <label htmlFor={vehicle.name}>
+                        {`${vehicle.name} (${vehicle.nTotal})`}{' '}
+                        {vehicle.selectedBy.includes(destination) && (
+                          <FontAwesomeIcon
+                            icon={faCheck}
+                            className={styles.checkedIcon}
+                          />
+                        )}
+                      </label>
                     </div>
                   ))}
                 </>
@@ -214,11 +243,14 @@ const Dashboard = ({ findFalcone }) => {
             </div>
           </div>
         ))}
-        <div className={styles.dashboard__select}>Time Taken: {timeTaken}</div>
+        <div className={styles.timeTaken}>Time Taken: {timeTaken}</div>
       </div>
 
       <div className={styles.dashboard__btnAction}>
-        <button onClick={findFalcone.bind(null, vehicles, planets, timeTaken)}>
+        <button
+          onClick={findFalcone.bind(null, vehicles, planets, timeTaken)}
+          disabled={isButtonDisabled()}
+        >
           <span>Find Falcone!</span>
         </button>
       </div>

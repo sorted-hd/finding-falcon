@@ -1,24 +1,86 @@
 .header {
-  width: 100%;
+  width: 90%;
+  height: 8vh;
+  border-bottom: 1px solid #ecf0f1;
   display: flex;
+  justify-content: center;
   align-items: center;
+  padding: 0.8rem;
+  margin: auto;
 }
 
-.header__text {
+.header__brand {
+  font-size: 1rem;
+  color: white;
   width: 70%;
-  font-size: 3rem;
-  text-align: center;
+  font-weight: bold;
+  line-height: 1.7;
+  transition: font-size 800ms linear;
 }
 
-.header__action {
+.header__nav {
   width: 30%;
 }
 
-.header__actionBtn {
+.header__navItems {
+  width: 100%;
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  margin: 0;
+  padding: 0;
+}
+
+.header__navItem button {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
   border: none;
-  cursor: pointer;
   outline: none;
-  font-size: 1.2rem;
-  padding: 0.8rem;
-  background-color: #fff;
+  background-color: #2c3e50;
+  box-shadow: inset 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+.actionItem__text {
+  display: none;
+}
+
+.header__navItem button:hover {
+  filter: brightness(-50%);
+  cursor: pointer;
+}
+
+@media (min-width: 350px) {
+  .header__brand {
+    font-size: 1.5rem;
+  }
+
+  .header__navItem button {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@media (min-width: 600px) {
+  .header__brand {
+    font-size: 2.2rem;
+  }
+
+  .mobileIcon {
+    display: none;
+  }
+
+  .header__navItem button {
+    width: max-content;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 0.4rem;
+    box-shadow: none;
+    background-color: inherit;
+  }
+
+  .actionItem__text {
+    display: inline;
+    color: white;
+  }
 }

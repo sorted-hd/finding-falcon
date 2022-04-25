@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink } from 'react-router-dom';
 import { faRefresh } from '@fortawesome/free-solid-svg-icons';
+import { removeResult } from '../../utilities';
 import styles from './Header.module.css';
 
 const Header = () => {
@@ -10,7 +11,13 @@ const Header = () => {
       <nav className={styles.header__nav}>
         <ul className={styles.header__navItems}>
           <li className={styles.header__navItem}>
-            <NavLink to="/reset" className={styles.link}>
+            <NavLink
+              to="/reset"
+              className={styles.link}
+              onClick={() => {
+                removeResult();
+              }}
+            >
               <FontAwesomeIcon icon={faRefresh} className={styles.mobileIcon} />
               <span className={styles.actionItem__text}>Reset</span>
             </NavLink>

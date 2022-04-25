@@ -165,6 +165,10 @@ const handleSelectionForVehicles = (vehicles, selectedValue, selectedName) => {
   return vehicles;
 };
 
+const removeResult = () => {
+  localStorage.removeItem(config.RESULT);
+};
+
 export {
   makeAPICallForPlanets,
   makeAPICallForVehicles,
@@ -174,4 +178,5 @@ export {
   calculateTimeTaken,
   handleSelectionForPlanets,
   handleSelectionForVehicles,
+  removeResult,
 };

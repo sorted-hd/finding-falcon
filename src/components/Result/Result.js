@@ -2,16 +2,17 @@ import { useEffect, useState } from 'react';
 
 import { Link } from 'react-router-dom';
 import config from '../../config';
+import { removeResult } from '../../utilities';
 import styles from './Result.module.css';
 
 const Result = () => {
   const [result, setResult] = useState({});
   useEffect(() => {
     const nResult = JSON.parse(localStorage.getItem(config.RESULT));
-    setResult(nResult);
-    // return () => {
-    //   localStorage.removeItem(config.RESULT);
-    // };
+    removeResult();
+    return () => {
+      setResult(nResult);
+    };
   }, []);
 
   let domDisplayResult;
@@ -41,7 +42,13 @@ const Result = () => {
   return (
     <div className={styles.result}>
       {domDisplayResult}
-      <Link to="/reset" className={styles.link}>
+      <Link
+        to="/reset"
+        className={styles.link}
+        onClick={() => {
+          removeResult();
+        }}
+      >
         <span className={styles.actionItem__text}>Play Again</span>
       </Link>
     </div>

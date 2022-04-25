@@ -6,7 +6,6 @@ import Footer from './components/Footer/Footer';
 import Header from './components/Header/Header';
 import Home from './components/Home/Home';
 import Result from './components/Result/Result';
-import config from './config';
 
 function App() {
   return (
@@ -17,7 +16,7 @@ function App() {
           <Home />
         </Route>
         <Route path="/reset" exact>
-          {localStorage.removeItem(config.RESULT) || <Redirect to="/" />}
+          <Redirect to="/" />
         </Route>
         <Route path="/results" exact>
           <Result />

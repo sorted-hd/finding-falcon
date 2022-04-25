@@ -1,4 +1,4 @@
-import Dashboard from '../Dashboard';
+import Dashboard from '../Dashboard/Dashboard';
 import axios from 'axios';
 import config from '../../config';
 import styles from './Home.module.css';

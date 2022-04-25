@@ -1,51 +1,48 @@
+import {
+  calculateTimeTaken,
+  checkFindButtonEligibility,
+  checkPlanetsSelected,
+  checkVehicleEligibility,
+  handleSelectionForPlanets,
+  handleSelectionForVehicles,
+  makeAPICallForPlanets,
+  makeAPICallForVehicles,
+} from '../../utilities';
 import { useEffect, useState } from 'react';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import axios from 'axios';
+import Destination from '../Destination/Destination';
+import { StatusCodes } from 'http-status-codes';
+import Vehicles from '../Vehicles/Vehicles';
 import config from '../../config';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import styles from './Dashboard.module.css';
 
 const Dashboard = ({ findFalcone }) => {
   const [planets, setPlanets] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [timeTaken, setTimeTaken] = useState(0);
+  const [error, setError] = useState({});
+
   useEffect(() => {
-    makePlanetsAPICall();
-    makeVehiclesAPICall();
+    performAPICallFor(config.PLANETS);
+    performAPICallFor(config.VEHICLES);
   }, []);
 
-  const makePlanetsAPICall = async () => {
-    const responseReceived = await axios.get(config.PLANETS_API_URL);
-    let originalData = responseReceived.data;
-    originalData = originalData.map((data) => ({
-      ...data,
-      isSelected: false,
-      selectedBy: '',
-    }));
-    setPlanets(originalData);
-  };
-
-  const ifDestinationSelected = (destinationName) => {
-    let flag = false;
-    planets.forEach((planet) => {
-      if (planet.selectedBy === destinationName && planet.isSelected) {
-        flag = !flag;
+  const performAPICallFor = async (keyword) => {
+    try {
+      if (keyword === config.PLANETS) {
+        let responseReceived = await makeAPICallForPlanets();
+        setPlanets(responseReceived);
       }
-    });
-    return flag;
-  };
-
-  const makeVehiclesAPICall = async () => {
-    const responseReceived = await axios.get(config.VEHICLES_API_URL);
-    let originalData = responseReceived.data;
-    originalData = originalData.map((data) => ({
-      ...data,
-      isSelected: false,
-      nTotal: data.total_no,
-      selectedBy: [],
-    }));
-    setVehicles(originalData);
+      if (keyword === config.VEHICLES) {
+        let responseReceived = await makeAPICallForVehicles();
+        setVehicles(responseReceived);
+      }
+    } catch (error) {
+      const statusCode = error.response.status
+        ? error.response.status
+        : StatusCodes.BAD_REQUEST;
+      setError({ statusCode, message: error.message });
+    }
   };
 
   const onSelectHandler = (event) => {
@@ -56,137 +53,39 @@ const Dashboard = ({ findFalcone }) => {
 
     let nPlanets = [...planets];
     let nVehicles = [...vehicles];
-    nPlanets = nPlanets.map((nPlanet) => {
-      if (nPlanet.name === selectedValue) {
-        nPlanet = { ...nPlanet, isSelected: true, selectedBy: selectedName };
-        return nPlanet;
-      } else {
-        return nPlanet;
-      }
-    });
 
-    nPlanets = nPlanets.map((nPlanet) => {
-      if (
-        nPlanet.selectedBy === selectedName &&
-        nPlanet.name !== selectedValue
-      ) {
-        return { ...nPlanet, isSelected: false, selectedBy: '' };
-      }
-      return nPlanet;
-    });
+    let { mPlanets, mVehicles } = handleSelectionForPlanets(
+      nVehicles,
+      nPlanets,
+      selectedValue,
+      selectedName
+    );
 
-    nVehicles = nVehicles.map((nVehicle) => {
-      if (nVehicle.selectedBy.includes(selectedName)) {
-        let idx = nVehicle.selectedBy.indexOf(curr.name);
-        nVehicle.selectedBy.splice(idx, 1);
-        return {
-          ...nVehicle,
-          nTotal: nVehicle.nTotal + 1,
-          isSelected: false,
-          selectedBy: nVehicle.selectedBy,
-        };
-      }
-      return nVehicle;
-    });
-
-    setVehicles(nVehicles);
-    setPlanets(nPlanets);
+    setVehicles(mVehicles);
+    setPlanets(mPlanets);
   };
 
   const onVehicleSelectHandler = (event) => {
     const curr = event.target;
+    const selectedValue = curr.value;
+    const selectedName = curr.name;
 
     let nVehicles = [...vehicles];
     let nPlanets = [...planets];
-    let selectedPlanetDistance = [];
-    let selectedVehicleSpeed = 0;
-    let nTimeTaken = 0;
-    nVehicles = nVehicles.map((nVehicle) => {
-      if (nVehicle.name === curr.value) {
-        selectedVehicleSpeed = nVehicle.speed;
-        return {
-          ...nVehicle,
-          isSelected: true,
-          nTotal: nVehicle.nTotal - 1,
-          selectedBy: [...nVehicle.selectedBy, curr.name],
-        };
-      }
-      return nVehicle;
-    });
 
-    nVehicles = nVehicles.map((nVehicle) => {
-      if (
-        nVehicle.selectedBy.includes(curr.name) &&
-        nVehicle.name !== curr.value
-      ) {
-        let idx = nVehicle.selectedBy.indexOf(curr.name);
-        nVehicle.selectedBy.splice(idx, 1);
-        return {
-          ...nVehicle,
-          isSelected: false,
-          nTotal: nVehicle.nTotal + 1,
-          selectedBy: nVehicle.selectedBy,
-        };
-      }
-      return nVehicle;
-    });
-    console.log(nVehicles);
+    nVehicles = handleSelectionForVehicles(
+      nVehicles,
+      selectedValue,
+      selectedName
+    );
 
-    nPlanets.forEach((nPlanet) => {
-      if (nPlanet.isSelected) {
-        selectedPlanetDistance.push(nPlanet);
-      }
-    });
-
-    nVehicles.forEach((nVehicle) => {
-      selectedPlanetDistance.forEach((planetDistance) => {
-        if (nVehicle.selectedBy.includes(planetDistance.selectedBy)) {
-          nTimeTaken += Math.round(planetDistance.distance / nVehicle.speed);
-        }
-      });
-    });
-
-    setTimeTaken(nTimeTaken);
+    setTimeTaken(calculateTimeTaken(nVehicles, nPlanets));
     setVehicles(nVehicles);
   };
 
-  const getPlanetSelectedFor = (destinationName) => {
-    const nPlanets = [...planets];
-    for (let idx = 0; idx < nPlanets.length; idx++) {
-      if (nPlanets[idx].selectedBy === destinationName) {
-        return nPlanets[idx];
-      }
-    }
-
-    return {};
-  };
-
-  const checkVehicleEligibility = (nVehicle, destinationName) => {
-    if (nVehicle.nTotal === 0) return true;
-    if (nVehicle.max_distance < getPlanetSelectedFor(destinationName).distance)
-      return true;
-
-    return false;
-  };
-
-  const isButtonDisabled = () => {
-    let selectionsRequired = config.DESTINATION_LIST.length;
-    let planetSelectionsAvailable = planets.reduce((total, planet) => {
-      if (planet.isSelected) {
-        return (total += 1);
-      }
-      return total;
-    }, 0);
-
-    let vehicleSelectionsAvailable = vehicles.reduce((total, vehicle) => {
-      return (total += vehicle.selectedBy.length);
-    }, 0);
-    console.log(vehicleSelectionsAvailable, planetSelectionsAvailable);
-    return !(
-      planetSelectionsAvailable === selectionsRequired &&
-      vehicleSelectionsAvailable === selectionsRequired
-    );
-  };
+  if (error.message) {
+    return <h1 className={styles.error}>{error.message}</h1>;
+  }
 
   return (
     <div className={styles.dashboard}>
@@ -196,47 +95,28 @@ const Dashboard = ({ findFalcone }) => {
       <div className={styles.dashboard__selectAction}>
         {config.DESTINATION_LIST.map((destination, idx) => (
           <div className={styles.dashboard__select} key={idx}>
-            <span>{destination}</span>
-            <select
+            <Destination
+              destination={destination}
+              planets={planets}
               onChange={onSelectHandler}
-              defaultValue={'default'}
-              name={destination}
-            >
-              <option value="default" disabled={true} hidden={true}>
-                SELECT
-              </option>
-              {planets.map(
-                (planet, idx) =>
-                  (!planet.isSelected || planet.selectedBy === destination) && (
-                    <option key={idx} value={planet.name}>
-                      {planet.name}
-                    </option>
-                  )
-              )}
-            </select>
+            />
+
             <div className={styles.radioActionBtn}>
-              {ifDestinationSelected(destination) && (
+              {checkPlanetsSelected(destination, planets) && (
                 <>
                   {vehicles.map((vehicle, idx) => (
-                    <div key={idx}>
-                      <input
-                        type="radio"
-                        name={destination}
-                        onChange={onVehicleSelectHandler}
-                        value={vehicle.name}
-                        disabled={checkVehicleEligibility(vehicle, destination)}
-                        checked={vehicle.selectedBy.includes(destination)}
-                      />
-                      <label htmlFor={vehicle.name}>
-                        {`${vehicle.name} (${vehicle.nTotal})`}{' '}
-                        {vehicle.selectedBy.includes(destination) && (
-                          <FontAwesomeIcon
-                            icon={faCheck}
-                            className={styles.checkedIcon}
-                          />
-                        )}
-                      </label>
-                    </div>
+                    <Vehicles
+                      key={idx}
+                      destination={destination}
+                      onChange={onVehicleSelectHandler}
+                      vehicle={vehicle}
+                      disabled={checkVehicleEligibility(
+                        vehicle,
+                        destination,
+                        planets
+                      )}
+                      checked={vehicle.selectedBy.includes(destination)}
+                    />
                   ))}
                 </>
               )}
@@ -249,7 +129,7 @@ const Dashboard = ({ findFalcone }) => {
       <div className={styles.dashboard__btnAction}>
         <button
           onClick={findFalcone.bind(null, vehicles, planets, timeTaken)}
-          disabled={isButtonDisabled()}
+          disabled={checkFindButtonEligibility(planets, vehicles)}
         >
           <span>Find Falcone!</span>
         </button>

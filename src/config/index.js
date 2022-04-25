@@ -11,6 +11,8 @@ const config = {
   ],
   DEFAULT: 'DEFAULT',
   RESULT: 'RESULT',
+  PLANETS: 'PLANETS',
+  VEHICLES: 'VEHICLES',
   API_CONFIG: {
     headers: {
       'content-type': 'application/json',

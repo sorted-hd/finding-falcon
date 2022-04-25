@@ -9,7 +9,7 @@ const Result = () => {
   const [result, setResult] = useState({});
   useEffect(() => {
     const nResult = JSON.parse(localStorage.getItem(config.RESULT));
-    removeResult();
+    localStorage.removeItem(config.RESULT);
     return () => {
       setResult(nResult);
     };

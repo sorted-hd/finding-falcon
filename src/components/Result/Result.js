@@ -9,10 +9,7 @@ const Result = () => {
   const [result, setResult] = useState({});
   useEffect(() => {
     const nResult = JSON.parse(localStorage.getItem(config.RESULT));
-    localStorage.removeItem(config.RESULT);
-    return () => {
-      setResult(nResult);
-    };
+    setResult(nResult);
   }, []);
 
   let domDisplayResult;

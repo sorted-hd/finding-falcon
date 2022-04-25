@@ -1,43 +1,51 @@
 import { useEffect, useState } from 'react';
 
+import { Link } from 'react-router-dom';
+import config from '../../config';
 import styles from './Result.module.css';
 
 const Result = () => {
   const [result, setResult] = useState({});
   useEffect(() => {
-    const nResult = JSON.parse(localStorage.getItem('result'));
+    const nResult = JSON.parse(localStorage.getItem(config.RESULT));
     setResult(nResult);
+    // return () => {
+    //   localStorage.removeItem(config.RESULT);
+    // };
   }, []);
 
   let domDisplayResult;
   if (result) {
     if (result.status === 'success') {
       domDisplayResult = (
-        <div className={styles.result}>
+        <>
           <h2>
             Success! Congratulations on finding falcone. King Shan is mighty
             pleased.! 😀
           </h2>
           <h2>Time Taken: {result.timeTaken}</h2>
           <h2>Planet found: {result.planet_name}</h2>
-        </div>
+        </>
       );
     } else {
       domDisplayResult = (
-        <div className={styles.result}>
-          <h2>Oops! You were unable to find falcone. Please try again! 🫤</h2>
-        </div>
+        <h2>Oops! You were unable to find falcone. Please try again! 🫤</h2>
       );
     }
   } else {
     domDisplayResult = (
-      <div className={styles.result}>
-        <h2>Oops! No results to display, make sure to play the game. 🫤</h2>
-      </div>
+      <h2>Oops! No results to display, make sure to play the game. 🫤</h2>
     );
   }
 
-  return domDisplayResult;
+  return (
+    <div className={styles.result}>
+      {domDisplayResult}
+      <Link to="/reset" className={styles.link}>
+        <span className={styles.actionItem__text}>Play Again</span>
+      </Link>
+    </div>
+  );
 };
 
 export default Result;

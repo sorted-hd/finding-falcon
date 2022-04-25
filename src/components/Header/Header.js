@@ -1,6 +1,6 @@
-import { faHome, faRefresh } from '@fortawesome/free-solid-svg-icons';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { NavLink } from 'react-router-dom';
+import { faRefresh } from '@fortawesome/free-solid-svg-icons';
 import styles from './Header.module.css';
 
 const Header = () => {
@@ -10,16 +10,10 @@ const Header = () => {
       <nav className={styles.header__nav}>
         <ul className={styles.header__navItems}>
           <li className={styles.header__navItem}>
-            <button>
+            <NavLink to="/reset" className={styles.link}>
               <FontAwesomeIcon icon={faRefresh} className={styles.mobileIcon} />
               <span className={styles.actionItem__text}>Reset</span>
-            </button>
-          </li>
-          <li className={styles.header__navItem}>
-            <button>
-              <FontAwesomeIcon icon={faHome} className={styles.mobileIcon} />
-              <span className={styles.actionItem__text}>GeekTrust Home</span>
-            </button>
+            </NavLink>
           </li>
         </ul>
       </nav>

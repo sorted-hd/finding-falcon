@@ -45,6 +45,7 @@
   border-radius: 5px;
   outline: none;
   color: white;
+  cursor: pointer;
 }
 
 .radioActionBtn {

@@ -21,28 +21,22 @@ const Home = () => {
         vehicle_names.push(vehicle.name);
       }
     });
-    console.log(planet_names, vehicle_names);
+
     const result = await performFalconeAPICall({ vehicle_names, planet_names });
     const payload = { ...result, timeTaken };
-    localStorage.setItem('result', JSON.stringify(payload));
+    localStorage.setItem(config.RESULT, JSON.stringify(payload));
     history.push('/results');
   };
 
   const performFalconeAPICall = async (payload) => {
-    const configProp = {
-      headers: {
-        'content-type': 'application/json',
-        accept: 'application/json',
-      },
-    };
     const token = await axios
-      .post(config.TOKEN_URL, {}, configProp)
+      .post(config.TOKEN_URL, {}, config.API_CONFIG)
       .then((response) => response.data);
 
     payload.token = token.token;
-    console.log(payload);
+
     const falconeStatus = await axios
-      .post(config.FIND_API_URL, JSON.stringify(payload), configProp)
+      .post(config.FIND_API_URL, JSON.stringify(payload), config.API_CONFIG)
       .then((response) => response.data);
 
     return falconeStatus;

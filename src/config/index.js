@@ -19,6 +19,7 @@ const config = {
       accept: 'application/json',
     },
   },
+  GEEKTRUST_URL: 'https://www.geektrust.com/coding',
 };
 
 export default config;
